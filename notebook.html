@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordBook · 生词错题本</title>
+    <link rel="stylesheet" href="notebook.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <div class="brand">
+            <img src="icons/icon48.png" alt="WordBook" class="brand-icon" />
+            <div>
+              <h1>WordBook 生词错题本</h1>
+              <p>划词收录 · 双语对照 · 语境记忆 · 错题复习</p>
+            </div>
+          </div>
+
+          <nav class="nav-pills">
+            <button class="nav-btn active" data-view="notebook" type="button">📖 生词错题本</button>
+            <button class="nav-btn" data-view="review" type="button">🎯 错题抽查</button>
+            <button class="nav-btn" data-view="backup" type="button">📦 导入导出</button>
+            <button class="nav-btn" data-view="settings" type="button">⚙ 设置</button>
+          </nav>
+
+          <div class="topbar-right">
+            <span class="native-pill">简体中文双语本</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="main-container">
+        <!-- View 1: Notebook -->
+        <section id="view-notebook" class="view-panel">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">累计收录</span>
+              <strong id="statTotal" class="stat-val">0</strong>
+            </div>
+            <div class="stat-card accent-amber">
+              <span class="stat-label">错题待掌握</span>
+              <strong id="statPending" class="stat-val">0</strong>
+            </div>
+            <div class="stat-card accent-green">
+              <span class="stat-label">已掌握</span>
+              <strong id="statMastered" class="stat-val">0</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">今日新增</span>
+              <strong id="statToday" class="stat-val">0</strong>
+            </div>
+          </div>
+
+          <div class="panel-card add-bar">
+            <input
+              id="nbQuickInput"
+              type="text"
+              placeholder="手动添加不认识的单词、短语或长难句，自动翻译为简体中文..."
+            />
+            <button id="nbQuickAddBtn" class="btn btn-primary" type="button">翻译并收录</button>
+          </div>
+
+          <div class="filters-bar">
+            <input
+              id="nbSearchInput"
+              class="search-input"
+              type="search"
+              placeholder="搜索原文、中文译文、语境例句、笔记或来源网页..."
+            />
+            <select id="nbTypeFilter">
+              <option value="all">全部类型</option>
+              <option value="word">仅单词</option>
+              <option value="phrase">仅短语</option>
+              <option value="sentence">仅句子</option>
+            </select>
+            <select id="nbStatusFilter">
+              <option value="all">全部状态</option>
+              <option value="wrong">错题本（未掌握 + 复习中）</option>
+              <option value="new">未掌握</option>
+              <option value="learning">复习中</option>
+              <option value="mastered">已掌握</option>
+            </select>
+            <select id="nbSortOrder">
+              <option value="newest">最新收录</option>
+              <option value="oldest">最早收录</option>
+              <option value="encounters">遇到次数最多</option>
+              <option value="wrongCount">遗忘次数最多</option>
+            </select>
+          </div>
+
+          <div id="nbList" class="entries-grid"></div>
+        </section>
+
+        <!-- View 2: Flashcard Review -->
+        <section id="view-review" class="view-panel hidden">
+          <div class="panel-card review-controls">
+            <div class="review-opt">
+              <label>复习范围：</label>
+              <select id="reviewScope">
+                <option value="wrong">仅错题（未掌握 / 复习中）</option>
+                <option value="all">全部收录词条</option>
+                <option value="word">仅单词</option>
+                <option value="phrase_sentence">仅短语和句子</option>
+              </select>
+            </div>
+            <div class="review-opt">
+              <label>考察方向：</label>
+              <select id="reviewDirection">
+                <option value="orig_to_native">看原文 → 回想中文意思</option>
+                <option value="native_to_orig">看中文 → 回想原文表达</option>
+              </select>
+            </div>
+            <button id="restartReviewBtn" class="btn btn-secondary" type="button">重新抽题</button>
+          </div>
+
+          <div id="reviewStage" class="review-stage"></div>
+        </section>
+
+        <!-- View 3: Import & Export -->
+        <section id="view-backup" class="view-panel hidden">
+          <div class="backup-grid">
+            <div class="panel-card backup-card">
+              <h3>导出为 CSV（Excel / Anki 制卡）</h3>
+              <p>导出包含原文、中文译文、音标、语境例句、个人笔记与来源链接的双语表格文件，支持 Excel 直接打开或导入 Anki。</p>
+              <button id="exportCsvBtn" class="btn btn-primary" type="button">导出 CSV 文件</button>
+            </div>
+            <div class="panel-card backup-card">
+              <h3>导出 JSON 完整备份</h3>
+              <p>完整保留词条状态、复习次数、错题记录与词典释义，方便跨设备迁移或定期备份。</p>
+              <button id="exportJsonBtn" class="btn btn-secondary" type="button">导出 JSON 备份</button>
+            </div>
+            <div class="panel-card backup-card">
+              <h3>导入 JSON 备份</h3>
+              <p>选择之前导出的 WordBook JSON 文件进行合并导入，已存在的相同词条不会重复覆盖。</p>
+              <input id="importJsonInput" type="file" accept=".json,application/json" hidden />
+              <button id="importJsonBtn" class="btn btn-secondary" type="button">选择 JSON 文件导入</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- View 4: Settings -->
+        <section id="view-settings" class="view-panel hidden">
+          <div class="panel-card settings-card">
+            <h2>插件偏好设置</h2>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input id="cfgShowFloating" type="checkbox" />
+                <span>在网页选中文本时，自动在附近显示「译并记」浮动按钮</span>
+              </label>
+              <p class="form-help">关闭后，您仍可通过鼠标右键菜单「添加到 WordBook 生词错题本」或快捷键 <code>Alt+Shift+S</code> 收录。</p>
+            </div>
+
+            <hr class="divider" />
+
+            <h3>翻译引擎配置（默认翻译为简体中文）</h3>
+            <div class="form-group">
+              <label class="radio-label">
+                <input type="radio" name="engine" value="auto" id="engineAuto" />
+                <span>内置自动翻译（默认免配置，支持单词词典释义、短语与整句翻译）</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="engine" value="custom_llm" id="engineLlm" />
+                <span>自定义 AI 大模型接口（兼容 OpenAI Chat Completions 格式）</span>
+              </label>
+            </div>
+
+            <div id="llmConfigBox" class="llm-box hidden">
+              <div class="form-group">
+                <label for="cfgApiUrl">API 接口地址（Endpoint URL）</label>
+                <input id="cfgApiUrl" type="url" placeholder="https://api.openai.com/v1/chat/completions" />
+              </div>
+              <div class="form-group">
+                <label for="cfgApiKey">API Key</label>
+                <input id="cfgApiKey" type="password" placeholder="sk-..." />
+              </div>
+              <div class="form-group">
+                <label for="cfgModel">模型名称（Model）</label>
+                <input id="cfgModel" type="text" placeholder="gpt-4o-mini" />
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button id="saveSettingsBtn" class="btn btn-primary" type="button">保存设置</button>
+              <span id="saveSettingsToast" class="status-msg"></span>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="notebook.js"></script>
+  </body>
+</html>

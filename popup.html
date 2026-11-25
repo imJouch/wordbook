@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordBook 生词错题本</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <img src="icons/icon48.png" alt="WordBook" class="brand-icon" />
+          <div>
+            <h1 class="brand-title">WordBook</h1>
+            <p class="brand-sub">网页双语生词错题本</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button id="toggleSettingsBtn" class="icon-btn" type="button" title="设置">
+            ⚙
+          </button>
+          <button id="openNotebookBtn" class="primary-chip" type="button">
+            完整错题本 ↗
+          </button>
+        </div>
+      </header>
+
+      <section id="settingsDrawer" class="settings-drawer hidden">
+        <div class="setting-row">
+          <label for="floatingToggle">划词显示「译并记」浮动按钮</label>
+          <input id="floatingToggle" type="checkbox" />
+        </div>
+        <div class="drawer-footer">
+          <span class="hint-text">快捷键：Alt+Shift+S 或右键划词收录</span>
+          <button id="openFullSettingsBtn" class="link-btn" type="button">翻译引擎设置 →</button>
+        </div>
+      </section>
+
+      <section class="quick-add">
+        <input
+          id="quickInput"
+          type="text"
+          placeholder="输入或粘贴单词、短语、句子，自动译为简体中文..."
+          autocomplete="off"
+        />
+        <button id="quickAddBtn" type="button">译并记</button>
+      </section>
+
+      <section class="toolbar">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-filter="all" type="button">
+            全部 <span id="countAll" class="tab-count">0</span>
+          </button>
+          <button class="tab" data-filter="wrong" type="button">
+            错题本 <span id="countWrong" class="tab-count">0</span>
+          </button>
+          <button class="tab" data-filter="mastered" type="button">
+            已掌握 <span id="countMastered" class="tab-count">0</span>
+          </button>
+        </div>
+        <div class="search-wrap">
+          <input id="searchInput" type="search" placeholder="搜索原文 / 中文译文..." />
+        </div>
+      </section>
+
+      <main id="entryList" class="entry-list">
+        <div class="empty-state">加载中...</div>
+      </main>
+
+      <footer class="footer">
+        <span class="lang-pill">中英/多语双语对照（简体中文）</span>
+        <button id="startReviewBtn" class="link-btn" type="button">开始错题抽查 ↗</button>
+      </footer>
+    </div>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
